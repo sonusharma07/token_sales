@@ -12,7 +12,7 @@ contract('DappToken', (accounts) => {
         let supply = await token.totalSupply()
         assert.equal(supply.toNumber(), 1000000, 'Sets total supply to 1000000')
         let balanceOfOwner = await token.balanceOf(accounts[0])
-        assert.equal(balanceOfOwner.toNumber(),1000000,'Sets balance of owner to 1000000')
+        assert.equal(balanceOfOwner.toNumber(), 1000000, 'Sets balance of owner to 1000000')
     })
     it('change ownership of tokens', async () => {
         let token = await DappToken.deployed();
@@ -20,9 +20,20 @@ contract('DappToken', (accounts) => {
         assert.equal(success, true, 'Transfer of 25k successful')
         let receipt = await token.transfer(accounts[1], 25000, { from: accounts[0] });
         assert(receipt.logs.length, 1, 'Log length is 1')
-        assert(receipt.logs[0].event,'Transfer','Emit Transfer event')
+        assert(receipt.logs[0].event, 'Transfer', 'Emit Transfer event')
         assert(receipt.logs[0].args._from, accounts[0], 'From accounts[0]')
         assert(receipt.logs[0].args._to, accounts[1], 'To accounts[1]')
         assert(receipt.logs[0].args._value, 25000, 'value 25k')
+    })
+    it('approve allowance', async () => {
+        let token = await DappToken.deployed();
+        let success = await token.approve.call(accounts[1], 100, { from: accounts[0] })
+        assert.equal(success, true, 'Approve of 100 successful')
+        let receipt = await token.approve(accounts[1], 100, { from: accounts[0] });
+        assert(receipt.logs.length, 1, 'Log length is 1')
+        assert(receipt.logs[0].event, 'Allowance', 'Emit Allowance event')
+        assert(receipt.logs[0].args._owner, accounts[0], 'From accounts[0]')
+        assert(receipt.logs[0].args._spender, accounts[1], 'To accounts[1]')
+        assert(receipt.logs[0].args._value, 100, 'value 100')
     })
 })
